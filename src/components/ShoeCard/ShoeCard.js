@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 
-import { WEIGHTS } from '../../constants';
+import { WEIGHTS, QUERIES } from '../../constants';
 import { formatPrice, pluralize, isNewShoe } from '../../utils';
 import Spacer from '../Spacer';
 
@@ -34,13 +34,15 @@ const ShoeCard = ({
   return (
     <Link href={`/shoe/${slug}`}>
       <Wrapper>
-        <ImageWrapper>
-          <Image alt="" src={imageSrc} />
+        <TopWrapper>
+          <ImageWrapper>
+            <Image alt="" src={imageSrc} />
+          </ImageWrapper>
           {variant === 'on-sale' && <SaleFlag>Sale</SaleFlag>}
           {variant === 'new-release' && (
             <NewFlag>Just released!</NewFlag>
           )}
-        </ImageWrapper>
+        </TopWrapper>
         <Spacer size={12} />
         <Row>
           <Name>{name}</Name>
@@ -73,15 +75,21 @@ const Link = styled.a`
   color: inherit;
 `;
 
-const Wrapper = styled.article``;
+const TopWrapper = styled.div`
+  position: relative;
+`;
 
 const ImageWrapper = styled.div`
-  position: relative;
+  line-height: 0;
+  overflow: hidden;
+  border-radius: 16px 16px 4px 4px;
 `;
 
 const Image = styled.img`
   width: 100%;
-  border-radius: 16px 16px 4px 4px;
+  transform-origin: center 80%;
+  transition: transform 500ms, filter 500ms;
+  will-change: transform;
 `;
 
 const Row = styled.div`
@@ -121,6 +129,8 @@ const Flag = styled.div`
   font-weight: ${WEIGHTS.bold};
   color: var(--color-white);
   border-radius: 2px;
+  will-change: transform;
+  transition: transform 500ms, box-shadow 500ms;
 `;
 
 const SaleFlag = styled(Flag)`
@@ -128,6 +138,26 @@ const SaleFlag = styled(Flag)`
 `;
 const NewFlag = styled(Flag)`
   background-color: var(--color-secondary);
+`;
+
+const Wrapper = styled.article`
+  &:hover ${ImageWrapper} ${Image} {
+    filter: brightness(1.05);
+    transition: filter 200ms, transform 200ms;
+  }
+
+  @media ${QUERIES.indifferentToMotion} {
+    &:hover ${TopWrapper} ${Image} {
+      transform: scale(1.1);
+    }
+
+    &:hover ${TopWrapper} ${Flag} {
+      transform: translateY(-5px);
+      box-shadow: 2px 2px 6px hsl(0deg 0% 0% / 0.15),
+                  -2px 2px 6px hsl(0deg 0% 0% / 0.15);
+      transition: transform 200ms, box-shadow 200ms;
+    }
+  }
 `;
 
 export default ShoeCard;
